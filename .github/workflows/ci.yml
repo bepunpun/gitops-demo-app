@@ -52,3 +52,23 @@ jobs:
           tags: ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  # The only "deploy" step in CI: record the new image tag in the config repo.
+  # Nothing here touches a server; the GitOps agent picks the change up from git.
+  update-config:
+    needs: image
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: bepunpun/gitops-demo-config
+          token: ${{ secrets.CONFIG_REPO_TOKEN }}
+
+      - name: Bump the staging image tag
+        run: |
+          ./scripts/set-image-tag.sh staging "${{ needs.image.outputs.tag }}"
+          git config user.name "gitops-ci-bot"
+          git config user.email "gitops-ci-bot@users.noreply.github.com"
+          git commit -am "ci: staging -> ${{ needs.image.outputs.tag }}"
+          git push
