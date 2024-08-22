@@ -34,7 +34,7 @@ Two repositories, on purpose:
 | Repo | Holds | Changes when |
 |---|---|---|
 | `gitops-demo-app` (this one) | source, Dockerfile, CI | the code changes |
-| [`gitops-demo-config`](../gitops-demo-config) | the desired state of every environment, plus the agent | a release is promoted, a setting changes, something is rolled back |
+| [`gitops-demo-config`](https://github.com/bepunpun/gitops-demo-config) | the desired state of every environment, plus the agent | a release is promoted, a setting changes, something is rolled back |
 
 CI never talks to the Docker host. It builds an image, pushes it, and writes the new tag
 into the config repo. A small agent on the host pulls that repo and makes the running
